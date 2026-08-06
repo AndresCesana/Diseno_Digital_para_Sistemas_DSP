@@ -8,6 +8,7 @@ reg ready_in;
 wire signed [15:0] y_out;
 wire valid_out;
 wire ready_out;
+
 actividad_5 dut(
     .clk(clk),
     .rst(rst),
@@ -18,6 +19,7 @@ actividad_5 dut(
     .valid_out(valid_out),
     .ready_in(ready_in)
 );
+
 initial
     clk = 0;
 always #5 clk = ~clk;
@@ -104,8 +106,8 @@ initial begin
     rst = 0;
     for(i=0;i<10;i=i+1) begin
         @(posedge clk);
-        x_in = i;
-        valid_in = 1;
+        x_in <= i;
+        valid_in <= 1;
     end
     valid_in = 0;
     @(posedge clk);

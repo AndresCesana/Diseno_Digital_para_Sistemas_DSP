@@ -1,4 +1,20 @@
-sim
-*.vcd
+# --- vectores y parametros generados por gen_vectors.py ---
+*.hex
+params.vh
+
+# --- artefactos de simulacion (iverilog / vvp) ---
 *.out
-build
+*.vvp
+sim.out
+
+# --- waveforms ---
+*.vcd
+*.fst
+*.gtkw
+*.ghw
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/

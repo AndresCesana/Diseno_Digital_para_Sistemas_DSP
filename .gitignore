@@ -6,6 +6,7 @@ params.vh
 *.out
 *.vvp
 sim.out
+sim
 
 # --- waveforms ---
 *.vcd

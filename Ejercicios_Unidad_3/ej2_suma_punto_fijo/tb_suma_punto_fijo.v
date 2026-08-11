@@ -21,12 +21,21 @@ module tb_suma_punto_fijo;
     wire signed [NBO-1:0] o;
 
     integer i, errores, mostrados;
+    integer n_neg = 0, n_pos = 0, n_mix = 0, n_cero = 0, n_indef = 0;
 
     suma_punto_fijo dut (.a(a), .b(b), .o(o));
 
     initial begin
         $dumpfile("tb_suma_punto_fijo.vcd");
         $dumpvars(0, tb_suma_punto_fijo);
+
+        // el ancho del DUT se verifica antes que nada: si no coincide,
+        // Verilog trunca en silencio y los tests podrian pasar igual
+        if ($bits(dut.o) !== NBO) begin
+            $display("FATAL: DUT declara %0d bits, se esperaban %0d",
+                     $bits(dut.o), NBO);
+            $finish;
+        end
 
         $readmemh("a.hex",        mem_a);
         $readmemh("b.hex",        mem_b);
@@ -39,6 +48,7 @@ module tb_suma_punto_fijo;
                  -(2.0**(NBIO-1)), (2.0**(NBIO-1)) - (2.0**(-NBFO)));
         $display("   resolucion   : %f", 2.0**(-NBFO));
         $display("   vectores     : %0d  (ref: fxpmath)", NVEC);
+        $display("   modo         : %0s", `MODO);
         $display("==================================================");
 
         errores = 0;  mostrados = 0;
@@ -49,7 +59,22 @@ module tb_suma_punto_fijo;
             esperado = mem_o[i];
             #1;
 
-            if (o !== esperado) begin
+            // cobertura por cuadrante de signos
+            if (a == 0 || b == 0)      n_cero = n_cero + 1;
+            else if (a < 0 && b < 0)   n_neg  = n_neg  + 1;
+            else if (a > 0 && b > 0)   n_pos  = n_pos  + 1;
+            else                       n_mix  = n_mix  + 1;
+
+            if (^o === 1'bx) begin
+                n_indef = n_indef + 1;
+                errores = errores + 1;
+                if (mostrados < MAX_MSG) begin
+                    mostrados = mostrados + 1;
+                    $display("[%0d] SALIDA INDEFINIDA (%b) - revisar conexiones",
+                             i, o);
+                end
+            end
+            else if (o !== esperado) begin
                 errores = errores + 1;
                 if (mostrados < MAX_MSG) begin
                     mostrados = mostrados + 1;
@@ -65,10 +90,15 @@ module tb_suma_punto_fijo;
             end
         end
 
-        if (errores > MAX_MSG)
-            $display("... (%0d errores mas omitidos)", errores - MAX_MSG);
+        if (errores > mostrados)
+            $display("... (%0d errores mas omitidos)", errores - mostrados);
 
         $display("==================================================");
+        $display(" cobertura: neg+neg=%0d  pos+pos=%0d  mixto=%0d  con cero=%0d",
+                 n_neg, n_pos, n_mix, n_cero);
+        if (n_indef > 0)
+            $display(" ATENCION: %0d vectores con salida indefinida", n_indef);
+        $display("--------------------------------------------------");
         if (errores == 0)
             $display(" PASS  -  %0d/%0d casos OK", NVEC, NVEC);
         else

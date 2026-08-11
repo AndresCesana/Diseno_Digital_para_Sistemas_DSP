@@ -32,15 +32,18 @@ def bordes(nb, nbf):
     return [lo, lo+1, -1, 0, 1, hi-1, hi]
 
 # ---------- construccion de la lista ----------
-if N_VECTORS >= ESPACIO or os.environ.get("EXHAUSTIVE"):
+LIMITE = 1 << 20
+
+if ESPACIO <= LIMITE:
     pares = [(x, y) for x in rango_raw(NB1) for y in rango_raw(NB2)]
+    modo  = "exhaustivo"
 else:
     pares = [(x, y) for x in bordes(NB1, NBF1) for y in bordes(NB2, NBF2)]
-    random.seed(0)                                   # reproducible
+    random.seed(0)
     while len(pares) < N_VECTORS:
         pares.append((random.choice(rango_raw(NB1)),
                       random.choice(rango_raw(NB2))))
-    pares = pares[:max(N_VECTORS, len(bordes(NB1,NBF1))*len(bordes(NB2,NBF2)))]
+    modo = f"bordes + {N_VECTORS} random"
 
 # ---------- modelo de referencia ----------
 fa, fb, fo = open("a.hex","w"), open("b.hex","w"), open("expected.hex","w")
@@ -67,6 +70,7 @@ with open("params.vh","w") as f:
     for k, v in [("NB1",NB1),("NBF1",NBF1),("NB2",NB2),("NBF2",NBF2),
                  ("NVEC",len(pares))]:
         f.write(f"`define {k} {v}\n")
+    f.write(f'`define MODO "{modo}"\n')
     f.write("`endif\n")
 
 print(f"S({NB1},{NBF1}) + S({NB2},{NBF2}) -> S({NBO},{NBFO})")

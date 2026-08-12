@@ -103,7 +103,6 @@ module tb_rns_mult;
         $display("  Vectores cargados: %0d", NV);
         $display("");
 
-        // deja que se completen los initial que llenan las ROMs
         #1;
 
         for (i = 0; i < NV; i = i + 1) begin

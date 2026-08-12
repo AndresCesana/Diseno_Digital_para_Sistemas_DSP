@@ -11,7 +11,7 @@
 #==============================================================
 set -euo pipefail
 
-RTL="rns_mult.v mod_lut.v mod_mult_lut.v"
+RTL="rns_mult.v"
 TB="tb_rns_mult.v"
 VECTORS="x.hex y.hex expected.hex valid.hex params.vh"
 OUT="tb.out"

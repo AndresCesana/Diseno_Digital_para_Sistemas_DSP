@@ -55,24 +55,27 @@ module rns_mult #(
     wire [WMAX-1:0] x [0:2];
     wire [WMAX-1:0] y [0:2];
     wire [WMAX-1:0] o [0:2];
+    wire [2*WMAX-1:0] p [0:2];
     wire [SW-1:0]   suma_crt;
 
-    mod_lut #(.MOD(m0), .IN_W(XW), .OUT_W(WMAX)) enc_x0 (.idx(X), .val(x[0]));
-    mod_lut #(.MOD(m1), .IN_W(XW), .OUT_W(WMAX)) enc_x1 (.idx(X), .val(x[1]));
-    mod_lut #(.MOD(m2), .IN_W(XW), .OUT_W(WMAX)) enc_x2 (.idx(X), .val(x[2]));
+    assign x[0] = X % m0;
+    assign x[1] = X % m1;
+    assign x[2] = X % m2;
 
-    mod_lut #(.MOD(m0), .IN_W(XW), .OUT_W(WMAX)) enc_y0 (.idx(Y), .val(y[0]));
-    mod_lut #(.MOD(m1), .IN_W(XW), .OUT_W(WMAX)) enc_y1 (.idx(Y), .val(y[1]));
-    mod_lut #(.MOD(m2), .IN_W(XW), .OUT_W(WMAX)) enc_y2 (.idx(Y), .val(y[2]));
+    assign y[0] = Y % m0;
+    assign y[1] = Y % m1;
+    assign y[2] = Y % m2;
 
-    mod_mult_lut #(.MOD(m0), .W(WMAX)) mul0 (.a(x[0]), .b(y[0]), .val(o[0]));
-    mod_mult_lut #(.MOD(m1), .W(WMAX)) mul1 (.a(x[1]), .b(y[1]), .val(o[1]));
-    mod_mult_lut #(.MOD(m2), .W(WMAX)) mul2 (.a(x[2]), .b(y[2]), .val(o[2]));
+    assign p[0] = x[0] * y[0];
+    assign p[1] = x[1] * y[1];
+    assign p[2] = x[2] * y[2];
+
+    assign o[0] = p[0] % m0;
+    assign o[1] = p[1] % m1;
+    assign o[2] = p[2] % m2;
 
     assign suma_crt = (o[0]*E0) + (o[1]*E1) + (o[2]*E2);
 
-    mod_lut #(.MOD(M), .IN_W(SW), .OUT_W(XW)) red_crt (.idx(suma_crt), .val(O));
-
-
+    assign O = suma_crt % M;
 
 endmodule

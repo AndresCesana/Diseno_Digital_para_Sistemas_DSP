@@ -202,10 +202,9 @@ module rca_tb #(
             $display("  CRITICAL PATH OBSERVADO");
             $display("    Cadena: c[0] -> AND(pc) -> OR(c_out) -> c[1] -> ... -> c[%0d]", N);
             $display("    %0d etapas x 2 compuertas = %0d niveles logicos", N, 2*N);
-            $display("    Medido %0d ua = %0d ua/etapa (AND=2 + OR=2). Escala O(N):", 
+            $display("    Medido %0d ua = %0d ua/etapa (AND=2 + OR=2). Escala O(N):",
                      t_delay_cin, t_delay_cin/N);
-            $display("    duplicar N duplica el delay -> este es el cuello de");
-            $display("    botella que motiva carry-lookahead / carry-select.");
+            $display("    duplicar N duplica el delay.");
             $display("    Las XOR del camino de suma NO estan en el path critico:");
             $display("    p[i]=a^b se calcula en paralelo (t=%0d) y ya esta listo", 3);
             $display("    cuando llega el carry. Por eso el FA expone solo 2");

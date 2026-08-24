@@ -43,7 +43,8 @@ module newton_raphson #(
     lut #(.WIDTH(WIDTH)) u_lut (.idx(a_reg[14:12]), .out(y_lut));
     wire [2*WIDTH-1:0] p1   = a_reg * y_reg;           
     wire [2*WIDTH-1:0] d    = -p1;                      
-    wire [WIDTH-1:0]   d16  = d[2*WIDTH-1:WIDTH];       
+    wire [WIDTH:0] d_r = (d + (1 << (WIDTH-1))) >> WIDTH;
+    wire [WIDTH-1:0] d16 = d_r[WIDTH] ? {WIDTH{1'b1}} : d_r[WIDTH-1:0];
     wire [2*WIDTH-1:0] p2   = y_reg * d16;              
     wire [WIDTH:0] y_full = (p2 + (1 << (WIDTH-2))) >> (WIDTH-1);
     wire [WIDTH-1:0] y_next = y_full[WIDTH] ? {WIDTH{1'b1}} : y_full[WIDTH-1:0];

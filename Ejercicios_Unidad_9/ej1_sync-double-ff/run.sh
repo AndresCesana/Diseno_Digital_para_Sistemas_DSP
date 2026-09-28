@@ -35,13 +35,13 @@ function report(name, expected, actual, passed) {
 }
 
 {
-    if ($1 != "SUMMARY:" || NF != 6)
+    if ($1 != "SUMMARY:" || NF != 7)
         malformed = 1
 
     for (i = 2; i <= NF; i++) {
         fields = split($i, pair, "=")
         if (fields != 2 ||
-            pair[1] !~ /^(toggles|meta|FF1|FF2_demo|FF2_real)$/ ||
+            pair[1] !~ /^(toggles|meta|FF1|FF2_demo|FF2_real|bad_X)$/ ||
             pair[2] !~ /^[0-9]+$/ ||
             pair[1] in observed) {
             malformed = 1
@@ -54,7 +54,7 @@ function report(name, expected, actual, passed) {
 END {
     if (malformed || !("toggles" in observed) || !("meta" in observed) ||
         !("FF1" in observed) || !("FF2_demo" in observed) ||
-        !("FF2_real" in observed)) {
+        !("FF2_real" in observed) || !("bad_X" in observed)) {
         print "ERROR: formato SUMMARY invalido o incompleto." > "/dev/stderr"
         exit 2
     }
@@ -62,10 +62,11 @@ END {
     printf "  %-15s | %-18s | %-8s | %s\n", "Metrica", "Esperado", "Obtenido", "Estado"
     printf "  ----------------+--------------------+----------+--------\n"
     report("Toggles", "2000", observed["toggles"], observed["toggles"] == 2000)
-    report("Eventos meta", "~300 (150..450)", observed["meta"], observed["meta"] >= 150 && observed["meta"] <= 450)
-    report("Fallos FF1", "~57 (20..100)", observed["FF1"], observed["FF1"] >= 20 && observed["FF1"] <= 100)
-    report("Fallos FF2 demo", "~11 (0..30)", observed["FF2_demo"], observed["FF2_demo"] <= 30)
+    report("Eventos meta", "280 (150..450)", observed["meta"], observed["meta"] >= 150 && observed["meta"] <= 450)
+    report("Fallos FF1", "~53 (20..100)", observed["FF1"], observed["FF1"] >= 20 && observed["FF1"] <= 100)
+    report("Fallos FF2 demo", "~10 (0..30)", observed["FF2_demo"], observed["FF2_demo"] <= 30)
     report("Fallos FF2 real", "0", observed["FF2_real"], observed["FF2_real"] == 0)
+    report("X en bad_cross", "= meta (" observed["meta"] ")", observed["bad_X"], observed["bad_X"] == observed["meta"])
 
     if (sim_status != 0) {
         printf "  Simulacion termino con codigo %d.\n", sim_status

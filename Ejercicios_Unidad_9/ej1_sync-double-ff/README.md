@@ -65,7 +65,7 @@ El testbench comprueba que:
 - Se apliquen exactamente 2000 toggles.
 - Los eventos meta y fallos FF1/FF2 demo esten dentro de rangos estadisticos amplios.
 - No haya fallos FF2 en el escenario real de `tau=50 ps`.
-- Las tres instancias produzcan la misma secuencia sincronizada.
+- La salida de cada instancia coincida en cada flanco con el pipeline de referencia (latencia de dos flancos y reset activo en bajo). Como TAU_DEMO no altera la lógica de dff_sync2, las tres instancias son funcionalmente idénticas; conservar las tres documenta las configuraciones de la consigna..
 
 Al final imprime una linea `SUMMARY` que consume `run.sh`, ademas del resumen
 estadistico generado por `meta_model.v`.
@@ -153,10 +153,10 @@ de FF2 (`sync_ff2_fail_real`).
 
 ### Conclusion
 
-El testbench confirma que las tres instancias del sincronizador entregan la misma
-secuencia con dos flancos de latencia. Tambien muestra que al usar el `tau` alto de
-demostracion se observan fallos estadisticos, mientras que con el `tau` aproximado
-de sky130 no se observa ningun fallo de FF2 en esta corrida.
+El testbench confirma que el sincronizador entrega el dato con dos flancos de 
+latencia y que el reset activo en bajo limpia el pipeline. Tambien muestra que al 
+usar el `tau` alto de demostracion se observan fallos estadisticos, mientras que 
+con el `tau` aproximado de sky130 no se observa ningun fallo de FF2 en esta corrida.
 
 Esto valida el comportamiento digital del diseño y la coherencia del modelo de
 simulacion, no una tasa fisica de fallos del chip. `meta_model.v` no representa la

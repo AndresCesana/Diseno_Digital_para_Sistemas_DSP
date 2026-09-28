@@ -121,7 +121,7 @@ module tb_dff_sync2;
         // Cada toggle ocurre 100 ps antes respecto del reloj que el anterior:
         // se recorren 50 fases en 5 ns y se repite el barrido 40 veces. El seed
         // fijo del modelo hace reproducibles los contadores estadisticos.
-        #1.99;
+        #1.94;
         repeat (2000) begin
             #4.9 src_bit = ~src_bit;
             toggle_count = toggle_count + 1;

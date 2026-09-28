@@ -59,13 +59,20 @@ toggles. El intervalo entre cambios es 4.9 ns mientras que el reloj tiene un per
 de 5 ns; asi, la fase de cada cambio avanza 100 ps respecto del reloj y recorre 50
 posiciones de fase por barrido. El `SEED=12345` del modelo hace reproducibles los
 contadores con Icarus Verilog.
+La fase inicial se elige con un desfase de 50 ps respecto de la grilla de 100 ps, 
+para que ningún toggle coincida exactamente con un flanco de dst_clk. Sin ese desfase, 
+40 toggles caen en el mismo instante que el flanco y el resultado del checker depende 
+del orden en que el simulador ejecuta los procesos.
 
 El testbench comprueba que:
 
 - Se apliquen exactamente 2000 toggles.
 - Los eventos meta y fallos FF1/FF2 demo esten dentro de rangos estadisticos amplios.
 - No haya fallos FF2 en el escenario real de `tau=50 ps`.
-- La salida de cada instancia coincida en cada flanco con el pipeline de referencia (latencia de dos flancos y reset activo en bajo). Como TAU_DEMO no altera la lógica de dff_sync2, las tres instancias son funcionalmente idénticas; conservar las tres documenta las configuraciones de la consigna..
+- La salida de cada instancia coincida en cada flanco con el pipeline de referencia 
+(latencia de dos flancos y reset activo en bajo). Como TAU_DEMO no altera la lógica de 
+dff_sync2, las tres instancias son funcionalmente idénticas; conservar las tres 
+documenta las configuraciones de la consigna..
 
 Al final imprime una linea `SUMMARY` que consume `run.sh`, ademas del resumen
 estadistico generado por `meta_model.v`.
@@ -119,9 +126,10 @@ cerca de 300 eventos meta en 2000 cambios.
 En esta prueba los cambios no tienen fase aleatoria: ocurren cada 4.9 ns, mientras
 que el reloj se repite cada 5 ns. La diferencia de 100 ps hace que cada toggle
 caiga 100 ps antes respecto del flanco que el anterior. Asi se recorren 50
-posiciones discretas de fase antes de repetir el barrido. Con la fase inicial de
-este estimulo, 7 de esas 50 posiciones caen dentro de los 750 ps criticos. Como
-el barrido se repite 40 veces, se obtienen `40 x 7 = 280` eventos meta.
+posiciones discretas de fase antes de repetir el barrido. Las posiciones quedan a 
+50, 150, …, 4950 ps del flanco; 7 de ellas (a 50, 150 y 250 ps antes... ) caen 
+dentro de los 750 ps críticos. Como el barrido se repite 40 veces, se obtienen 
+`40 x 7 = 280` eventos meta.
 
 `tau` es la constante de tiempo de la distribucion exponencial que modela cuanto
 tarda en resolverse un evento metaestable. Cuanto mayor es `tau`, mas lenta es la

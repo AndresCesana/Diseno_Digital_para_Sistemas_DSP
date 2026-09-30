@@ -8,12 +8,14 @@ module dff_sync2 #(
     output wire synced
 );
 
+    integer i;
+
     reg [STAGES-1:0] pipe;
 
     always @(posedge dst_clk) begin
         if(!rst) pipe <= {STAGES{1'b0}};
         else begin
-            for (integer i = 0; i < STAGES - 1; i = i + 1) pipe[i+1] <= pipe[i];
+            for (i = 0; i < STAGES - 1; i = i + 1) pipe[i+1] <= pipe[i];
             pipe[0] <= src_bit;
         end
     end
